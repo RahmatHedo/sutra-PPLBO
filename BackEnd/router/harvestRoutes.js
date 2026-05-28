@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../config/multer');
 const { authenticateToken } = require('../middleware/auth');
 const { 
     createHarvest, 
@@ -14,7 +13,7 @@ const {
 router.use(authenticateToken);
 
 // Endpoint Petani
-router.post('/', upload.single('foto'), createHarvest);
+router.post('/', createHarvest);           // foto_url dikirim lewat JSON body
 router.get('/petani', getHarvestsByPetani);
 
 // Endpoint Ketua

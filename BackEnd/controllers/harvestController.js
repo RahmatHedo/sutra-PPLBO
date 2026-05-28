@@ -1,11 +1,10 @@
 const Harvest = require('../models/Harvest');
 const User = require('../models/User');
 
-// 1. CREATE HARVEST (Input Panen)
+// 1. CREATE HARVEST (Input Panen) — foto sekarang berupa URL dari Supabase Storage
 const createHarvest = async (req, res) => {
     const petani_id = req.user.id;
-    const { tanggal_panen, komoditas, jumlah, satuan, lokasi, luas, cuaca, kualitas, catatan } = req.body;
-    const foto = req.file ? req.file.filename : null;
+    const { tanggal_panen, komoditas, jumlah, satuan, lokasi, luas, cuaca, kualitas, catatan, foto_url } = req.body;
 
     if (!tanggal_panen || !komoditas || !jumlah || !satuan || !lokasi) {
         return res.status(400).json({ message: "Data wajib (*) harus diisi!" });
@@ -13,7 +12,18 @@ const createHarvest = async (req, res) => {
 
     try {
         const result = await Harvest.create({
-            petani_id, tanggal_panen, komoditas, jumlah, satuan, lokasi, luas, cuaca, kualitas, catatan, foto, status: 'pending'
+            petani_id,
+            tanggal_panen,
+            komoditas,
+            jumlah,
+            satuan,
+            lokasi,
+            luas,
+            cuaca,
+            kualitas,
+            catatan,
+            foto: foto_url || null, // URL publik dari Supabase Storage
+            status: 'pending'
         });
 
         res.status(201).json({
@@ -43,12 +53,11 @@ const getHarvestsByPetani = async (req, res) => {
     }
 };
 
-// 3. GET HARVESTS FOR KETUA (Berdasarkan kelompok_tani yang sama)
+// 3. GET HARVESTS FOR KETUA (Berdasarkan daerah yang sama)
 const getHarvestsForKetua = async (req, res) => {
     const ketua_id = req.user.id;
 
     try {
-        // Ambil daerah dari ketua
         const ketuaInfo = await User.getKetuaDaerah(ketua_id);
         if (ketuaInfo.length === 0) {
             return res.status(404).json({ message: "Ketua tidak ditemukan" });
@@ -70,14 +79,14 @@ const getHarvestsForKetua = async (req, res) => {
 // 4. UPDATE HARVEST STATUS (Verifikasi Ketua)
 const updateHarvestStatus = async (req, res) => {
     const { id } = req.params;
-    const { status } = req.body; // 'verified' atau 'rejected'
+    const { status, catatan } = req.body; // 'verified' atau 'rejected'
 
     if (!['verified', 'rejected'].includes(status)) {
         return res.status(400).json({ message: "Status tidak valid" });
     }
 
     try {
-        const result = await Harvest.updateStatus(id, status);
+        const result = await Harvest.updateStatus(id, status, catatan);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Data panen tidak ditemukan" });

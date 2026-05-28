@@ -1,25 +1,24 @@
 {
-  "name": "be",
+  "name": "sutra-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sutra Backend API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@supabase/supabase-js": "^2.105.3",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.0.2",
-    "mysql2": "^3.16.2",
     "nodemon": "^3.1.11",
-    "puppeteer": "^24.42.0"
+    "pg": "^8.20.0"
   }
 }
